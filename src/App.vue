@@ -221,7 +221,7 @@ const saveHeadImg = () => {
   canvasRef.value.toBlob(
     (blob: Blob) => {
       let a = document.createElement("a");
-      a.download = `${new Date().getTime()}`;
+      a.download = `${new Date().getTime()}.png`;
       a.href = URL.createObjectURL(blob);
       a.click();
 
