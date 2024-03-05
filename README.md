@@ -1,7 +1,5 @@
 # vue-image-cropper
 
-ProjectName and Description
-
 # Installation
 
 1. git clone git@github.com:manshen666/vue-image-cropper.git
