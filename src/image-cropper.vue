@@ -2,9 +2,9 @@
   <div class="img-cropper" :style="imgCropperStyle">
     <div
       class="fixed-frame"
-      @click="pickImg"
+      @click="imageSelect"
       @wheel="zoom"
-      @drop="fileSelect"
+      @drop="imageDragSelect"
       @dragover="dragOver"
       @mouseleave="mouseUp()"
       ref="fixedFrameRef"
@@ -40,10 +40,15 @@
         :style="fixedFrameMaskStyle"
       ></div>
     </div>
-    <canvas ref="canvasRef" width="150" height="150" v-show="false"></canvas>
+    <canvas
+      ref="canvasRef"
+      :width="2 * cutAreaRadius"
+      :height="2 * cutAreaRadius"
+      v-show="false"
+    ></canvas>
     <input
-      ref="imgInputRef"
-      @change="getImg"
+      ref="imageInputRef"
+      @change="getImage"
       v-show="false"
       type="file"
       accept="image/*"
@@ -105,16 +110,16 @@ const fixedFrameMaskStyle = reactive({
 });
 
 const picked = ref(false);
-const pickImg = () => {
+const imageSelect = () => {
   if (picked.value) {
     return;
   }
-  imgInputRef.value.click();
+  imageInputRef.value.click();
 };
 
 const variableImgBoxRef = ref();
 const canvasRef = ref();
-const imgInputRef = ref();
+const imageInputRef = ref();
 const imageRef = ref();
 const fixedFrameRef = ref();
 const variableImgBoxPos = reactive({
@@ -154,7 +159,7 @@ const setVariableImgBoxSize = () => {
   maxMoveY = variableImgBoxPos.height / 2 - cutAreaRadius;
 };
 
-const getImg = (e: Event) => {
+const getImage = (e: Event) => {
   let files = (e.target as HTMLInputElement).files;
   if (files!.length > 0) {
     picked.value = true;
@@ -162,8 +167,9 @@ const getImg = (e: Event) => {
   }
 };
 
-const save = () => {
+const getBlob = () => {
   if (!picked.value) {
+    console.error("image is null");
     return;
   }
   let initScale = Math.max(
@@ -183,26 +189,45 @@ const save = () => {
     cutAreaRadius * 2 * initScale,
     0,
     0,
-    150,
-    150
+    2 * cutAreaRadius,
+    2 * cutAreaRadius
   );
 
-  canvasRef.value.toBlob(
-    (blob: Blob) => {
-      let a = document.createElement("a");
-      a.download = `${new Date().getTime()}.png`;
-      a.href = URL.createObjectURL(blob);
-      a.click();
-      reset();
-    },
-    "image/jpeg",
-    1
-  );
+  return new Promise<Blob | undefined>((resolve, reject) => {
+    canvasRef.value.toBlob(
+      (blob: Blob | null) => {
+        reset();
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error("generate blob error."));
+        }
+      },
+      "image/jpeg",
+      1
+    );
+  });
+};
+
+const save = async () => {
+  if (!picked.value) {
+    return;
+  }
+  let a = document.createElement("a");
+  a.download = `${new Date().getTime()}.png`;
+  try {
+    const blob = (await getBlob()) as Blob;
+    a.href = URL.createObjectURL(blob);
+    a.click();
+    URL.revokeObjectURL(a.href);
+  } catch (err) {
+    console.error("Failed to save:", err);
+  }
 };
 
 const reset = () => {
   ctx.clearRect(0, 0, canvasRef.value.width, canvasRef.value.height);
-  imgInputRef.value.value = "";
+  imageInputRef.value.value = "";
   picked.value = false;
   URL.revokeObjectURL(imageRef.value.src);
 };
@@ -213,7 +238,7 @@ const dragOver = (e: DragEvent) => {
   e.dataTransfer!.dropEffect = "copy";
 };
 
-const fileSelect = (e: DragEvent) => {
+const imageDragSelect = (e: DragEvent) => {
   e.stopPropagation();
   e.preventDefault();
 
@@ -300,6 +325,7 @@ const mouseUp = () => {
 defineExpose({
   save,
   reset,
+  getBlob,
 });
 
 onMounted(() => {
