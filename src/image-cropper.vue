@@ -73,6 +73,7 @@ const props = defineProps({
     default: 75,
   },
 });
+
 const emits = defineEmits({});
 
 const cutAreaRadius =
@@ -193,7 +194,7 @@ const getBlob = () => {
     2 * cutAreaRadius
   );
 
-  return new Promise<Blob | undefined>((resolve, reject) => {
+  return new Promise<Blob>((resolve, reject) => {
     canvasRef.value.toBlob(
       (blob: Blob | null) => {
         reset();
