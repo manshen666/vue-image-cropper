@@ -89,21 +89,3 @@ a vue image cropper plugin
 2. cd vue-image-cropper
 3. pnpm install
 4. pnpm run dev
-
-<style>
-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-th {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid black;
-}
-
-td {
-  padding: 12px;
-  border-bottom: 1px solid black;
-}
-</style>
