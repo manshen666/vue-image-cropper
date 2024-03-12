@@ -1,5 +1,5 @@
 {
-  "name": "image-cropper",
+  "name": "cs-image-cropper",
   "description": "a vue image cropper",
   "keywords": [
     "vue",
@@ -7,7 +7,7 @@
     "cropp",
     "cropper"
   ],
-  "version": "1.0.0",
+  "version": "1.1.0",
   "license": "MIT",
   "author": {
     "name": "cs"
@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "sass": "^1.63.6",
+    "vite-plugin-style-inject": "^0.0.1",
     "vue": "^3.3.4"
   },
   "devDependencies": {

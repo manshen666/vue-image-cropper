@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import VitePluginStyleInject from 'vite-plugin-style-inject'
 
 export default defineConfig({
   build: {
@@ -18,5 +19,5 @@ export default defineConfig({
       formats: ['es', 'umd']
     }
   },
-  plugins: [vue()]
+  plugins: [vue(), VitePluginStyleInject()]
 })
