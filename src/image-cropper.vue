@@ -22,11 +22,11 @@
           width: `${variableImgBoxPos.width}px`,
           height: `${variableImgBoxPos.height}px`,
           left: `${variableImgBoxPos.left}px`,
-          top: `${variableImgBoxPos.top}px`,
+          top: `${variableImgBoxPos.top}px`
         }"
         @click="
-          (e) => {
-            e.stopPropagation();
+          e => {
+            e.stopPropagation()
           }
         "
         @mousedown="mouseDown"
@@ -57,40 +57,40 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch, reactive } from "vue";
+import { ref, onMounted, watch, reactive } from 'vue'
 
 const props = defineProps({
   width: {
     type: Number,
-    default: 472,
+    default: 472
   },
   height: {
     type: Number,
-    default: 238,
+    default: 238
   },
   cutAreaRadius: {
     type: Number,
-    default: 75,
-  },
-});
+    default: 75
+  }
+})
 
-const emits = defineEmits({});
+const emits = defineEmits({})
 
 const cutAreaRadius =
   props.cutAreaRadius < props.height / 2 &&
   props.cutAreaRadius < props.width / 2
     ? props.cutAreaRadius
-    : Math.min(props.height / 2, props.width / 2) - 1;
+    : Math.min(props.height / 2, props.width / 2) - 1
 
 const imgCropperStyle = reactive({
   width: `${props.width}px`,
-  height: `${props.height}px`,
-});
+  height: `${props.height}px`
+})
 
 const cutBorderStyle = reactive({
   width: `${cutAreaRadius * 2}px`,
-  height: `${cutAreaRadius * 2}px`,
-});
+  height: `${cutAreaRadius * 2}px`
+})
 
 const fixedFrameMaskStyle = reactive({
   width: `${props.width}px`,
@@ -107,76 +107,75 @@ const fixedFrameMaskStyle = reactive({
     props.width / 2 + cutAreaRadius
   },${props.height / 2} A ${cutAreaRadius},${cutAreaRadius} 0,0,1 ${
     props.width / 2 - cutAreaRadius
-  },${props.height / 2} L 0 ${props.height / 2} z')`,
-});
+  },${props.height / 2} L 0 ${props.height / 2} z')`
+})
 
-const picked = ref(false);
+const picked = ref(false)
 const imageSelect = () => {
   if (picked.value) {
-    return;
+    return
   }
-  imageInputRef.value.click();
-};
+  imageInputRef.value.click()
+}
 
-const variableImgBoxRef = ref();
-const canvasRef = ref();
-const imageInputRef = ref();
-const imageRef = ref();
-const fixedFrameRef = ref();
+const variableImgBoxRef = ref()
+const canvasRef = ref()
+const imageInputRef = ref()
+const imageRef = ref()
+const fixedFrameRef = ref()
 const variableImgBoxPos = reactive({
   width: 0,
   height: 0,
   left: 0,
-  top: 0,
-});
-let ctx: CanvasRenderingContext2D;
+  top: 0
+})
+let ctx: CanvasRenderingContext2D
 
-watch(picked, (newX) => {
+watch(picked, newX => {
   if (newX === false) {
-    variableImgBoxPos.top = 0;
-    variableImgBoxPos.left = 0;
+    variableImgBoxPos.top = 0
+    variableImgBoxPos.left = 0
   } else {
     imageRef.value.onload = () => {
-      setVariableImgBoxSize();
-    };
+      setVariableImgBoxSize()
+    }
   }
-});
+})
 
-let maxMoveX: number;
-let maxMoveY: number;
+let maxMoveX: number
+let maxMoveY: number
 const setVariableImgBoxSize = () => {
-  let widthRatio =
-    fixedFrameRef.value.offsetWidth / imageRef.value.naturalWidth;
+  let widthRatio = fixedFrameRef.value.offsetWidth / imageRef.value.naturalWidth
   let heightRatio =
-    fixedFrameRef.value.offsetHeight / imageRef.value.naturalHeight;
+    fixedFrameRef.value.offsetHeight / imageRef.value.naturalHeight
   if (widthRatio >= heightRatio) {
-    variableImgBoxPos.height = fixedFrameRef.value.offsetHeight;
-    variableImgBoxPos.width = imageRef.value.naturalWidth * heightRatio;
+    variableImgBoxPos.height = fixedFrameRef.value.offsetHeight
+    variableImgBoxPos.width = imageRef.value.naturalWidth * heightRatio
   } else {
-    variableImgBoxPos.width = fixedFrameRef.value.offsetWidth;
-    variableImgBoxPos.height = imageRef.value.naturalHeight * widthRatio;
+    variableImgBoxPos.width = fixedFrameRef.value.offsetWidth
+    variableImgBoxPos.height = imageRef.value.naturalHeight * widthRatio
   }
-  maxMoveX = variableImgBoxPos.width / 2 - cutAreaRadius;
-  maxMoveY = variableImgBoxPos.height / 2 - cutAreaRadius;
-};
+  maxMoveX = variableImgBoxPos.width / 2 - cutAreaRadius
+  maxMoveY = variableImgBoxPos.height / 2 - cutAreaRadius
+}
 
 const getImage = (e: Event) => {
-  let files = (e.target as HTMLInputElement).files;
+  let files = (e.target as HTMLInputElement).files
   if (files!.length > 0) {
-    picked.value = true;
-    imageRef.value.src = URL.createObjectURL(files![0]);
+    picked.value = true
+    imageRef.value.src = URL.createObjectURL(files![0])
   }
-};
+}
 
 const getBlob = () => {
   if (!picked.value) {
-    console.error("image is null");
-    return;
+    console.error('image is null')
+    return
   }
   let initScale = Math.max(
     imageRef.value.naturalWidth / variableImgBoxPos.width,
     imageRef.value.naturalHeight / variableImgBoxPos.height
-  );
+  )
 
   ctx.drawImage(
     imageRef.value,
@@ -192,83 +191,83 @@ const getBlob = () => {
     0,
     2 * cutAreaRadius,
     2 * cutAreaRadius
-  );
+  )
 
   return new Promise<Blob>((resolve, reject) => {
     canvasRef.value.toBlob(
       (blob: Blob | null) => {
-        reset();
+        reset()
         if (blob) {
-          resolve(blob);
+          resolve(blob)
         } else {
-          reject(new Error("generate blob error."));
+          reject(new Error('generate blob error.'))
         }
       },
-      "image/jpeg",
+      'image/jpeg',
       1
-    );
-  });
-};
+    )
+  })
+}
 
 const save = async () => {
   if (!picked.value) {
-    return;
+    return
   }
-  let a = document.createElement("a");
-  a.download = `${new Date().getTime()}.png`;
+  let a = document.createElement('a')
+  a.download = `${new Date().getTime()}.png`
   try {
-    const blob = (await getBlob()) as Blob;
-    a.href = URL.createObjectURL(blob);
-    a.click();
-    URL.revokeObjectURL(a.href);
+    const blob = (await getBlob()) as Blob
+    a.href = URL.createObjectURL(blob)
+    a.click()
+    URL.revokeObjectURL(a.href)
   } catch (err) {
-    console.error("Failed to save:", err);
+    console.error('Failed to save:', err)
   }
-};
+}
 
 const reset = () => {
-  ctx.clearRect(0, 0, canvasRef.value.width, canvasRef.value.height);
-  imageInputRef.value.value = "";
-  picked.value = false;
-  URL.revokeObjectURL(imageRef.value.src);
-};
+  ctx.clearRect(0, 0, canvasRef.value.width, canvasRef.value.height)
+  imageInputRef.value.value = ''
+  picked.value = false
+  URL.revokeObjectURL(imageRef.value.src)
+}
 
 const dragOver = (e: DragEvent) => {
-  e.stopPropagation();
-  e.preventDefault();
-  e.dataTransfer!.dropEffect = "copy";
-};
+  e.stopPropagation()
+  e.preventDefault()
+  e.dataTransfer!.dropEffect = 'copy'
+}
 
 const imageDragSelect = (e: DragEvent) => {
-  e.stopPropagation();
-  e.preventDefault();
+  e.stopPropagation()
+  e.preventDefault()
 
-  let files = e.dataTransfer!.files;
+  let files = e.dataTransfer!.files
   if (files.length > 0) {
-    let fileName = files[0].name;
-    let suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
-    if (suffix == "jpg" || suffix == "png" || suffix == "jpeg") {
-      picked.value = true;
-      imageRef.value.src = URL.createObjectURL(files[0]);
+    let fileName = files[0].name
+    let suffix = fileName.substring(fileName.lastIndexOf('.') + 1)
+    if (suffix == 'jpg' || suffix == 'png' || suffix == 'jpeg') {
+      picked.value = true
+      imageRef.value.src = URL.createObjectURL(files[0])
     }
   }
-};
+}
 
-const SCALE = 1.1;
+const SCALE = 1.1
 const zoom = (e: WheelEvent) => {
   if (e.deltaY < 0) {
-    larger();
+    larger()
   } else {
-    smaller();
+    smaller()
   }
-};
+}
 
 const larger = () => {
-  variableImgBoxPos.width *= SCALE;
-  variableImgBoxPos.height *= SCALE;
-  maxMoveX = variableImgBoxPos.width / 2 - cutAreaRadius;
-  maxMoveY = variableImgBoxPos.height / 2 - cutAreaRadius;
-};
+  variableImgBoxPos.width *= SCALE
+  variableImgBoxPos.height *= SCALE
+  maxMoveX = variableImgBoxPos.width / 2 - cutAreaRadius
+  maxMoveY = variableImgBoxPos.height / 2 - cutAreaRadius
+}
 
 const smaller = () => {
   if (
@@ -281,57 +280,57 @@ const smaller = () => {
     variableImgBoxPos.top <
       -(variableImgBoxPos.height / SCALE / 2 - cutAreaRadius)
   ) {
-    return;
+    return
   }
-  variableImgBoxPos.width /= SCALE;
-  variableImgBoxPos.height /= SCALE;
-  maxMoveX = variableImgBoxPos.width / 2 - cutAreaRadius;
-  maxMoveY = variableImgBoxPos.height / 2 - cutAreaRadius;
-};
+  variableImgBoxPos.width /= SCALE
+  variableImgBoxPos.height /= SCALE
+  maxMoveX = variableImgBoxPos.width / 2 - cutAreaRadius
+  maxMoveY = variableImgBoxPos.height / 2 - cutAreaRadius
+}
 
-let mouseDownX: number;
-let mouseDownY: number;
-let currentTop: number = 0;
-let currentLeft: number = 0;
+let mouseDownX: number
+let mouseDownY: number
+let currentTop: number = 0
+let currentLeft: number = 0
 
 const mouseDown = (e: MouseEvent) => {
-  mouseDownX = e.clientX;
-  mouseDownY = e.clientY;
-  currentTop = variableImgBoxPos.top;
-  currentLeft = variableImgBoxPos.left;
-  variableImgBoxRef.value.style.cursor = "grabbing";
-  fixedFrameRef.value.addEventListener("mousemove", mouseMove);
-  fixedFrameRef.value.addEventListener("mouseup", mouseUp);
-};
+  mouseDownX = e.clientX
+  mouseDownY = e.clientY
+  currentTop = variableImgBoxPos.top
+  currentLeft = variableImgBoxPos.left
+  variableImgBoxRef.value.style.cursor = 'grabbing'
+  fixedFrameRef.value.addEventListener('mousemove', mouseMove)
+  fixedFrameRef.value.addEventListener('mouseup', mouseUp)
+}
 
-let transX = 0;
-let transY = 0;
+let transX = 0
+let transY = 0
 const mouseMove = (e: MouseEvent) => {
-  transX = e.clientX - mouseDownX;
-  transY = e.clientY - mouseDownY;
+  transX = e.clientX - mouseDownX
+  transY = e.clientY - mouseDownY
   variableImgBoxPos.top =
     Math.sign(transY + currentTop) *
-    Math.min(Math.abs(transY + currentTop), maxMoveY);
+    Math.min(Math.abs(transY + currentTop), maxMoveY)
   variableImgBoxPos.left =
     Math.sign(transX + currentLeft) *
-    Math.min(Math.abs(transX + currentLeft), maxMoveX);
-};
+    Math.min(Math.abs(transX + currentLeft), maxMoveX)
+}
 
 const mouseUp = () => {
-  fixedFrameRef.value.removeEventListener("mousemove", mouseMove);
-  fixedFrameRef.value.removeEventListener("mouseup", mouseUp);
-  variableImgBoxRef.value.style.cursor = "grab";
-};
+  fixedFrameRef.value.removeEventListener('mousemove', mouseMove)
+  fixedFrameRef.value.removeEventListener('mouseup', mouseUp)
+  variableImgBoxRef.value.style.cursor = 'grab'
+}
 
 defineExpose({
   save,
   reset,
-  getBlob,
-});
+  getBlob
+})
 
 onMounted(() => {
-  ctx = canvasRef.value.getContext("2d");
-});
+  ctx = canvasRef.value.getContext('2d')
+})
 </script>
 
 <style lang="scss" scoped>
