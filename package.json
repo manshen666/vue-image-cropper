@@ -1,8 +1,34 @@
 {
   "name": "image-cropper",
-  "private": false,
+  "description": "a vue image cropper",
+  "keywords": [
+    "vue",
+    "iamge",
+    "cropp",
+    "cropper"
+  ],
   "version": "1.0.0",
+  "license": "MIT",
+  "author": {
+    "name": "cs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manshen666/vue-image-cropper.git"
+  },
+  "private": false,
   "type": "module",
+  "main": "./dist/image-cropper.umd.cjs",
+  "module": "./dist/image-cropper.js",
+  "exports": {
+    ".": {
+      "import": "./dist/image-cropper.js",
+      "require": "./dist/image-cropper.umd.cjs"
+    }
+  },
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",

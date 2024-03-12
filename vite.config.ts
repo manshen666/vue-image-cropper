@@ -1,8 +1,22 @@
-import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue()],
-  base: "./",
-});
+  build: {
+    rollupOptions: {
+      external: ['vue'],
+      output: {
+        globals: {
+          vue: 'vue'
+        }
+      }
+    },
+    lib: {
+      entry: './src/index.ts',
+      name: 'image-cropper',
+      fileName: 'image-cropper',
+      formats: ['es', 'umd']
+    }
+  },
+  plugins: [vue()]
+})
