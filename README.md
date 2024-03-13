@@ -82,3 +82,7 @@ a vue image cropper plugin
         </tr>
     </tbody>
 </table>
+
+# Install
+
+npm i cs-image-cropper
